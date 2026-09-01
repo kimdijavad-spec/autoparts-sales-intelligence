@@ -40,6 +40,10 @@ PIPELINE_STEPS = [
         "name": "Customer payments",
         "script": "generate_payments.py",
     },
+    {
+        "name": "Comprehensive data quality validation",
+        "script": "validate_all_data.py",
+    },
 ]
 
 
@@ -72,7 +76,7 @@ def run_pipeline_step(
     step_name: str,
     script_name: str,
 ) -> float:
-    """Run one generation script in a separate process."""
+    """Run one pipeline script in a separate process."""
 
     script_path = SOURCE_FOLDER / script_name
 
@@ -105,7 +109,7 @@ def run_pipeline_step(
 
 
 def main() -> None:
-    """Run the complete synthetic data-generation pipeline."""
+    """Run the complete data-generation and validation pipeline."""
 
     print("AutoParts data pipeline started.")
     print(f"Python executable: {sys.executable}")
@@ -167,7 +171,7 @@ def main() -> None:
     )
 
     print(
-        "Generated files are available in: "
+        "Generated and validated files are available in: "
         f"{PROJECT_ROOT / 'data' / 'raw'}"
     )
 
