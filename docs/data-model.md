@@ -170,6 +170,11 @@ Planned fields:
 - One order can optionally be associated with one campaign.
 - One order can have one payment record.
 
+## Currency
+
+All monetary values in the synthetic dataset are represented in
+Iranian rials (IRR).
+
 ## Data Period
 
 The initial dataset will simulate 24 months of business operations.
