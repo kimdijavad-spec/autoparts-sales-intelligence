@@ -1,15 +1,17 @@
 # گزارش تحویل و ادامه پروژه AutoParts Sales Intelligence
 
-این فایل وضعیت کامل پروژه تا پایان مرحله انتقال داده‌های خام به Microsoft SQL Server را ثبت می‌کند. اگر Work فعلی از دسترس خارج شد، این فایل را به Work جدید بده و تأکید کن که مراحل انجام‌شده تکرار نشوند و کار دقیقاً از بخش «نقطه ادامه پروژه» دنبال شود.
+این فایل وضعیت کامل پروژه را تا پایان ساخت و اعتبارسنجی لایه تحلیلی Microsoft SQL Server ثبت می‌کند. اگر Work فعلی از دسترس خارج شد، این فایل را به Work جدید بده و تأکید کن مراحل کامل‌شده تکرار نشوند و کار دقیقاً از بخش «نقطه ادامه پروژه» دنبال شود.
 
 ## قواعد ادامه کار
 
-- دیتابیس انتخاب‌شده Microsoft SQL Server است، نه PostgreSQL.
+- دیتابیس انتخاب‌شده **Microsoft SQL Server** است، نه PostgreSQL.
 - سیستم‌عامل پروژه Windows 10 Pro است.
 - کاربر در SQL و Power BI تازه‌کار است؛ هر بار فقط یک مرحله یا یک دستور ارائه شود و سپس منتظر خروجی کاربر بمانید.
+- توضیحات به فارسی نوشته شوند و فقط نام ابزارها، کدها، Queryها و خروجی‌های فنی انگلیسی باقی بمانند.
 - مسیرها و نام فایل‌های موجود تغییر نکنند، مگر اینکه دلیل فنی مشخصی وجود داشته باشد.
-- پیش از هر Commit، وضعیت Git و فایل‌های تغییرکرده بررسی شوند.
-- هدف نهایی پروژه، ساخت یک نمونه‌کار حرفه‌ای برای تحلیل فروش عمده قطعات خودرو با Python، SQL Server، Power BI، n8n و یک AI Agent است.
+- هنگام تحویل فایل دانلودی، دستور بررسی کامل‌بودن همان فایل نیز در همان پاسخ ارائه شود.
+- پیش از هر Commit، `git status --short` و سپس `git diff --cached --check` بررسی شوند.
+- هدف نهایی، ساخت نمونه‌کار حرفه‌ای تحلیل فروش عمده قطعات خودرو با Python، SQL Server، Power BI، n8n و یک AI Agent است.
 
 ## مشخصات پروژه
 
@@ -40,17 +42,18 @@ main
 وضعیت فعلی Git:
 
 - شاخه محلی با `origin/main` هماهنگ است.
-- خروجی `git status --short` خالی است.
 - Working Tree تمیز است.
-- آخرین Commit فعلی:
+- آخرین Commit روی سیستم و GitHub:
 
 ```text
-4fa1e40 feat: load validated CSV data into SQL Server
+ee3a5e0 feat: add validated SQL analytics layer
 ```
 
 Commitهای مهم اخیر:
 
 ```text
+ee3a5e0 feat: add validated SQL analytics layer
+32e6437 docs: add project handoff report
 4fa1e40 feat: load validated CSV data into SQL Server
 0d49e3c feat: add SQL Server database schema
 d57f571 feat: integrate data validation into generation pipeline
@@ -61,10 +64,16 @@ a129381 feat: add comprehensive data quality validation
 
 ## محیط Python
 
-محیط مجازی پروژه فعال است:
+محیط مجازی پروژه:
 
 ```text
 D:\AI-Projects\autoparts-sales-intelligence\.venv
+```
+
+Python فعال پروژه:
+
+```text
+D:\AI-Projects\autoparts-sales-intelligence\.venv\Scripts\python.exe
 ```
 
 فایل وابستگی‌ها:
@@ -87,15 +96,9 @@ tzdata==2026.3
 pyodbc==5.3.0
 ```
 
-نسخه نصب‌شده `pyodbc`:
+## تولید و اعتبارسنجی داده‌های خام
 
-```text
-5.3.0
-```
-
-## تولید و اعتبارسنجی داده‌ها
-
-اسکریپت اجرای کامل خط تولید داده:
+اسکریپت اجرای کامل Pipeline:
 
 ```text
 src/generate_all_data.py
@@ -107,30 +110,27 @@ src/generate_all_data.py
 python src/generate_all_data.py
 ```
 
-این Pipeline هفت مرحله تولید داده را اجرا می‌کند و در مرحله هشتم، اعتبارسنجی جامع را با فایل زیر انجام می‌دهد:
+Pipeline هفت مرحله تولید داده را اجرا می‌کند و در مرحله هشتم فایل زیر را برای اعتبارسنجی جامع فراخوانی می‌کند:
 
 ```text
 src/validate_all_data.py
 ```
 
-اگر یکی از مراحل تولید یا اعتبارسنجی شکست بخورد، Pipeline با کد خطا متوقف می‌شود و پیام موفقیت نمایش داده نمی‌شود.
-
-آخرین اجرای کامل Pipeline موفق بوده و نتیجه اعتبارسنجی:
+آخرین اجرای کامل Pipeline موفق بوده است:
 
 ```text
+PIPELINE COMPLETED SUCCESSFULLY
 RESULT: PASSED
 All schema, completeness, relationship, and business-rule checks passed.
 ```
 
 ## فایل‌های داده خام
 
-مسیر فایل‌ها:
+مسیر:
 
 ```text
 D:\AI-Projects\autoparts-sales-intelligence\data\raw
 ```
-
-فایل‌ها و تعداد رکوردها:
 
 | فایل | تعداد رکورد |
 | --- | ---: |
@@ -142,116 +142,47 @@ D:\AI-Projects\autoparts-sales-intelligence\data\raw
 | `sales_orders.csv` | 8,000 |
 | `sales_order_lines.csv` | 25,000 |
 | `payments.csv` | 8,000 |
-| مجموع | 43,450 |
+| **مجموع** | **43,450** |
 
-ویژگی‌های مهم داده‌ها:
+ویژگی‌های مهم:
 
 - تاریخ‌ها با قالب `YYYY-MM-DD` ذخیره شده‌اند.
 - مقادیر منطقی CSV به شکل `True` و `False` هستند.
-- بعضی مقادیر `campaign_id` در `sales_orders.csv` خالی هستند و هنگام بارگذاری به `NULL` تبدیل می‌شوند.
-- بعضی مقادیر `paid_date` در `payments.csv` خالی هستند و هنگام بارگذاری به `NULL` تبدیل می‌شوند.
-- مبالغ عدد صحیح و بدون اعشار هستند.
-- همه فایل‌ها پیش از ورود به SQL Server از اعتبارسنجی جامع عبور کرده‌اند.
+- `campaign_id` خالی هنگام بارگذاری به `NULL` تبدیل می‌شود.
+- `paid_date` خالی هنگام بارگذاری به `NULL` تبدیل می‌شود.
+- مبالغ عدد صحیح و برحسب ریال هستند.
+- همه فایل‌ها پیش از ورود به SQL Server از اعتبارسنجی جامع عبور می‌کنند.
 
-ستون‌های فایل‌ها:
+## Microsoft SQL Server و SSMS
 
-```text
-sales_representatives.csv:
-sales_rep_id, sales_rep_name, region, hire_date, monthly_target, status
-
-customers.csv:
-customer_id, customer_name, customer_type, province, city,
-registration_date, credit_limit, sales_rep_id, status
-
-products.csv:
-product_id, sku, product_name, category, brand, compatible_vehicle,
-unit_cost, list_price, reorder_point, status
-
-campaigns.csv:
-campaign_id, campaign_name, channel, start_date, end_date, budget,
-target_customer_type, target_product_category, offered_discount
-
-campaign_targets.csv:
-campaign_id, customer_id, contact_date, message_delivered,
-customer_engaged, sales_followup, converted
-
-sales_orders.csv:
-order_id, order_date, customer_id, sales_rep_id, campaign_id,
-payment_method
-
-sales_order_lines.csv:
-order_line_id, order_id, product_id, quantity, unit_price,
-discount_percent, returned_quantity
-
-payments.csv:
-payment_id, order_id, customer_id, invoice_amount, invoice_date,
-due_date, paid_date, payment_status
-```
-
-## نصب Microsoft SQL Server
-
-نسخه نصب‌شده:
+نسخه SQL Server:
 
 ```text
 Microsoft SQL Server 2025 Standard Developer Edition
-```
-
-نسخه موتور دیتابیس:
-
-```text
 Microsoft SQL Server 2025 (RTM)
 17.0.1000.7
 ```
 
-تنظیمات نصب:
-
-- نوع نصب: نصب جدید SQL Server.
-- قابلیت نصب‌شده: `Database Engine Services`.
-- Azure Extension غیرفعال شد.
-- نوع نمونه: Default instance.
-- نام نمونه: `MSSQLSERVER`.
-- سرویس Database Engine روی حالت Automatic است.
-- سرویس SQL Server Agent روی حالت Manual است.
-- سرویس SQL Server Browser غیرفعال است.
-- گزینه Grant Perform Volume Maintenance Tasks privilege فعال شد.
-- روش احراز هویت Windows Authentication است.
-- حساب فعلی ویندوز با Add Current User به مدیران SQL Server اضافه شد.
-- نصب با وضعیت Succeeded کامل شد.
-
-## نصب SQL Server Management Studio
-
-نسخه نصب‌شده:
+نسخه SSMS:
 
 ```text
 SQL Server Management Studio 22
 Version 22.9.2
 ```
 
-مسیر فایل اجرایی:
+مسیر فایل اجرایی SSMS:
 
 ```text
 C:\Program Files\Microsoft SQL Server Management Studio 22\Release\Common7\IDE\SSMS.exe
 ```
 
-دستور اجرای SSMS در PowerShell:
+دستور اجرای SSMS:
 
 ```powershell
 & "C:\Program Files\Microsoft SQL Server Management Studio 22\Release\Common7\IDE\SSMS.exe"
 ```
 
-ورود به حساب Microsoft یا GitHub انجام نشده و گزینه زیر انتخاب شده است:
-
-```text
-Skip and add accounts later
-```
-
-قابلیت‌های اختیاری AI Assistance، Business Intelligence، Hybrid and Migration، Code tools و Database DevOps نصب نشده‌اند.
-
-Power BI Report Server عمداً نصب نشده است. Power BI Desktop نیز هنوز نصب نشده و قرار است در مرحله ساخت داشبورد نصب شود.
-
-## تنظیمات اتصال SQL Server
-
-تنظیمات اتصال موفق در SSMS:
+تنظیمات اتصال موفق:
 
 ```text
 Server Name: localhost
@@ -261,19 +192,15 @@ Trust Server Certificate: Enabled
 Database Name: <default>
 ```
 
-درایورهای ODBC نصب‌شده شامل نسخه‌های ۱۷ و ۱۸ هستند. پروژه از درایور ۶۴ بیتی زیر استفاده می‌کند:
+درایور مورد استفاده:
 
 ```text
-ODBC Driver 18 for SQL Server
+ODBC Driver 18 for SQL Server (64-bit)
 ```
 
-اتصال Python با `pyodbc` آزمایش شده و نام دیتابیس زیر با موفقیت بازگردانده شده است:
+Power BI Report Server عمداً نصب نشده است. Power BI Desktop نیز هنوز نصب نشده و باید در مرحله بعد نصب شود.
 
-```text
-autoparts_sales_intelligence
-```
-
-## دیتابیس و ساختار SQL
+## دیتابیس عملیاتی
 
 نام دیتابیس:
 
@@ -281,7 +208,7 @@ autoparts_sales_intelligence
 autoparts_sales_intelligence
 ```
 
-Schemaهای منطقی:
+Schemaهای عملیاتی:
 
 ```text
 sales
@@ -307,57 +234,33 @@ finance.payments
 
 - هر مشتری به یک نماینده فروش متصل است.
 - اهداف کمپین به کمپین و مشتری متصل‌اند.
-- هر سفارش به مشتری و نماینده فروش متصل است و ممکن است به یک کمپین متصل باشد.
+- هر سفارش به مشتری و نماینده فروش متصل است و ممکن است کمپین داشته باشد.
 - اقلام سفارش به سفارش و محصول متصل‌اند.
-- پرداخت از طریق ترکیب `order_id + customer_id` به همان سفارش و همان مشتری متصل است.
+- پرداخت با ترکیب `order_id + customer_id` به همان سفارش و مشتری متصل است.
 
-## فایل‌های SQL
+## فایل‌های ساخت و اصلاح دیتابیس
 
-### ساخت دیتابیس
+### `sql/01_create_database.sql`
 
-```text
-sql/01_create_database.sql
-```
+دیتابیس را فقط در صورت نبودن آن می‌سازد.
 
-این فایل فقط در صورت نبود دیتابیس، آن را ایجاد می‌کند و قابل اجرای مجدد است.
+### `sql/02_create_schema.sql`
 
-### ساخت Schemaها و جدول‌ها
+چهار Schema عملیاتی و هشت جدول را همراه با کلیدهای اصلی، کلیدهای خارجی، قیدهای یکتا، مقادیر پیش‌فرض و قواعد کسب‌وکار می‌سازد.
 
-```text
-sql/02_create_schema.sql
-```
+### `sql/03_expand_product_status.sql`
 
-این فایل ۴ Schema و ۸ جدول را همراه با کلیدهای اصلی، کلیدهای خارجی، قیدهای یکتا، مقادیر پیش‌فرض و محدودیت‌های کسب‌وکار می‌سازد. ساخت اشیا به‌صورت قابل‌تکرار نوشته شده است.
+اندازه ستون `inventory.products.status` را از `NVARCHAR(20)` به `NVARCHAR(30)` افزایش می‌دهد تا مقدار `Temporarily Unavailable` بدون بریدگی ذخیره شود.
 
-### افزایش اندازه وضعیت محصول
+## بارگذاری داده به SQL Server
 
-```text
-sql/03_expand_product_status.sql
-```
-
-در ساختار اولیه، ستون زیر `NVARCHAR(20)` بود:
-
-```text
-inventory.products.status
-```
-
-مقدار `Temporarily Unavailable` دارای ۲۳ کاراکتر بود و در ستون جا نمی‌شد. فایل مرحله سوم اندازه ستون را به شکل قابل‌تکرار به مقدار زیر افزایش می‌دهد:
-
-```text
-NVARCHAR(30)
-```
-
-این فایل در SSMS اجرا شده و پیام `Commands completed successfully` دریافت شده است.
-
-## اسکریپت بارگذاری SQL Server
-
-مسیر فایل:
+اسکریپت:
 
 ```text
 src/load_data_to_sql_server.py
 ```
 
-دستور اجرا:
+دستور:
 
 ```powershell
 python src/load_data_to_sql_server.py
@@ -365,119 +268,256 @@ python src/load_data_to_sql_server.py
 
 وظایف اسکریپت:
 
-- پیدا کردن فایل‌ها نسبت به ریشه پروژه.
 - بررسی نام و ترتیب ستون‌های CSV پیش از تغییر دیتابیس.
-- تبدیل تاریخ‌ها به نوع تاریخ Python و سپس SQL Server.
-- تبدیل مقدارهای `True` و `False` به `BIT`.
-- تبدیل `campaign_id` و `paid_date` خالی به `NULL`.
-- تبدیل مقادیر عددی به انواع مناسب.
+- تبدیل تاریخ‌ها، اعداد، مقادیر منطقی و مقدارهای خالی.
 - اتصال با Windows Authentication و ODBC Driver 18.
-- پاک‌سازی داده‌های قبلی در ترتیب معکوس وابستگی‌ها.
-- ورود داده‌ها در ترتیب صحیح کلیدهای خارجی.
-- انجام کل عملیات در یک تراکنش.
-- بازگردانی کامل تراکنش در صورت هر خطا.
-- مقایسه تعداد ردیف هر جدول SQL با فایل CSV متناظر پیش از Commit تراکنش.
+- پاک‌سازی داده قبلی در ترتیب معکوس وابستگی‌ها.
+- ورود داده جدید در ترتیب صحیح کلیدهای خارجی.
+- اجرای کل عملیات در یک تراکنش.
+- اجرای `rollback` کامل در صورت خطا.
+- مقایسه تعداد رکورد هر CSV با جدول SQL پیش از `commit`.
 
-ترتیب ورود جدول‌ها:
+ترتیب ورود:
 
-```text
-1. sales.sales_representatives
-2. sales.customers
-3. inventory.products
-4. marketing.campaigns
-5. marketing.campaign_targets
-6. sales.sales_orders
-7. sales.sales_order_lines
-8. finance.payments
-```
+1. `sales.sales_representatives`
+2. `sales.customers`
+3. `inventory.products`
+4. `marketing.campaigns`
+5. `marketing.campaign_targets`
+6. `sales.sales_orders`
+7. `sales.sales_order_lines`
+8. `finance.payments`
 
-ترتیب پاک‌سازی معکوس همین وابستگی‌هاست.
-
-### خطای حل‌شده pyodbc
-
-در اجرای اول، گزینه `fast_executemany` باعث خطای بافر رشته شد:
-
-```text
-String data, right truncation: length 46 buffer 40
-```
-
-این گزینه در نسخه فعلی اسکریپت غیرفعال شده است تا طول رشته‌ها براساس ردیف‌های ابتدایی محدود نشود.
-
-در اجرای بعدی، خطای واقعی کوچک‌بودن ستون `inventory.products.status` شناسایی شد. فایل `03_expand_product_status.sql` این مشکل را رفع کرد.
-
-## نتیجه نهایی بارگذاری
-
-آخرین اجرای `src/load_data_to_sql_server.py` با موفقیت کامل شد:
+آخرین اجرا موفق بوده است:
 
 ```text
 DATA LOAD COMPLETED SUCCESSFULLY
 All CSV and SQL Server row counts match.
 ```
 
-نتیجه تطبیق تعداد رکوردها:
+هر هشت جدول پر هستند و مجموعاً 43,450 رکورد دارند.
 
-| جدول | CSV | SQL Server | نتیجه |
-| --- | ---: | ---: | --- |
-| `sales.sales_representatives` | 12 | 12 | PASS |
-| `sales.customers` | 500 | 500 | PASS |
-| `inventory.products` | 300 | 300 | PASS |
-| `marketing.campaigns` | 12 | 12 | PASS |
-| `marketing.campaign_targets` | 1,626 | 1,626 | PASS |
-| `sales.sales_orders` | 8,000 | 8,000 | PASS |
-| `sales.sales_order_lines` | 25,000 | 25,000 | PASS |
-| `finance.payments` | 8,000 | 8,000 | PASS |
+## خطاهای مهمی که رفع شدند
 
-در حال حاضر هر ۸ جدول پر هستند و مجموعاً ۴۳٬۴۵۰ رکورد در SQL Server قرار دارد.
+### نبودن `pyodbc`
+
+پیام:
+
+```text
+ModuleNotFoundError: No module named 'pyodbc'
+```
+
+علت: کتابخانه در Python فعال پروژه نصب نبود. نسخه `5.3.0` در محیط مجازی نصب و در `requirements.txt` ثبت شد.
+
+### محدودیت بافر `fast_executemany`
+
+پیام:
+
+```text
+String data, right truncation: length 46 buffer 40
+```
+
+علت: بافر براساس یک رشته کوتاه‌تر محدود شده بود. `fast_executemany` در نسخه فعلی Loader غیرفعال شد.
+
+### کوچک‌بودن ستون وضعیت محصول
+
+پیام SQL Server:
+
+```text
+String or binary data would be truncated in table
+'inventory.products', column 'status'.
+```
+
+علت: طول `Temporarily Unavailable` از `NVARCHAR(20)` بیشتر بود. فایل `03_expand_product_status.sql` ستون را به `NVARCHAR(30)` افزایش داد.
+
+به‌دلیل استفاده از تراکنش، اجرای ناموفق هیچ جدول نیمه‌پری باقی نگذاشت.
+
+## لایه تحلیلی SQL
+
+Schema تحلیلی زیر ساخته شده است:
+
+```text
+analytics
+```
+
+این Schema، Viewهای تحلیلی را از جدول‌های عملیاتی جدا نگه می‌دارد.
+
+### فایل پایه: `sql/04_create_analytics_views.sql`
+
+این فایل قابل‌تکرار است و دو View پایه می‌سازد.
+
+#### `analytics.vw_sales_detail`
+
+- دانه‌بندی: یک ردیف به‌ازای هر قلم سفارش.
+- تعداد ردیف: 25,000.
+- اتصال سفارش به مشتری، نماینده فروش، محصول و کمپین.
+- محاسبه تعداد خالص، فروش ناخالص، تخفیف، مبلغ پیش از مرجوعی، مبلغ مرجوعی و فروش خالص.
+
+#### `analytics.vw_order_summary`
+
+- دانه‌بندی: یک ردیف به‌ازای هر سفارش.
+- تعداد ردیف: 8,000.
+- شامل مشخصات مشتری، نماینده، کمپین و وضعیت پرداخت.
+- شامل مجموع اقلام، تعداد سفارش و مرجوعی، فروش و اختلاف فاکتور.
+- `invoice_variance_amount` برای تمام سفارش‌ها صفر است.
+- 719 سفارش حداقل یک قلم مرجوعی دارند.
+
+### فایل مدیریتی: `sql/05_create_business_views.sql`
+
+این فایل شش View مدیریتی می‌سازد:
+
+| View | دانه‌بندی | تعداد ردیف |
+| --- | --- | ---: |
+| `analytics.vw_monthly_sales` | یک ردیف برای هر ماه | 24 |
+| `analytics.vw_customer_performance` | یک ردیف برای هر مشتری | 500 |
+| `analytics.vw_product_performance` | یک ردیف برای هر محصول | 300 |
+| `analytics.vw_sales_rep_performance` | یک ردیف برای هر نماینده | 12 |
+| `analytics.vw_campaign_performance` | یک ردیف برای هر کمپین | 12 |
+| `analytics.vw_payment_status_summary` | یک ردیف برای هر وضعیت پرداخت | 3 |
+
+شاخص‌های آماده‌شده شامل موارد زیر هستند:
+
+- تعداد سفارش و مشتری یکتا.
+- فروش ناخالص، تخفیف، مرجوعی و فروش خالص.
+- بهای خالص، سود ناخالص و حاشیه سود.
+- متوسط ارزش سفارش.
+- نرخ تخفیف و نرخ مرجوعی.
+- عملکرد و تحقق هدف نمایندگان فروش.
+- قیف کمپین، نرخ تحویل، تعامل و تبدیل.
+- فروش منتسب به کمپین، ROAS و هزینه هر تبدیل.
+- مبالغ سررسیدگذشته و وصول‌نشده مشتریان.
+- تعداد و مبلغ پرداخت‌ها براساس وضعیت.
+
+## اعداد مالی کنترل‌شده
+
+خروجی `analytics.vw_sales_detail`:
+
+```text
+detail_rows:            25,000
+distinct_orders:         8,000
+ordered_units:         437,428
+returned_units:          3,811
+gross_sales_amount:  17,943,838,600,000 IRR
+discount_amount:      1,378,221,538,000 IRR
+return_amount:          142,683,084,000 IRR
+net_sales_amount:    16,422,933,978,000 IRR
+```
+
+رابطه مالی تأییدشده:
+
+```text
+Gross Sales - Discount - Returns = Net Sales
+17,943,838,600,000 - 1,378,221,538,000 - 142,683,084,000
+= 16,422,933,978,000 IRR
+```
+
+مجموع فروش خالص در تمام Viewهای زیر دقیقاً برابر `16,422,933,978,000` ریال است:
+
+```text
+analytics.vw_order_summary
+analytics.vw_monthly_sales
+analytics.vw_customer_performance
+analytics.vw_product_performance
+analytics.vw_sales_rep_performance
+analytics.vw_payment_status_summary
+```
+
+## اعتبارسنجی لایه تحلیلی
+
+فایل:
+
+```text
+sql/06_validate_analytics_layer.sql
+```
+
+این فایل 17 کنترل خودکار انجام می‌دهد:
+
+- تطبیق تعداد ردیف Viewهای پایه با جدول‌های منبع.
+- حضور تمام مشتریان، محصولات، نمایندگان، کمپین‌ها و وضعیت‌های پرداخت.
+- حضور تمام 24 ماه سفارش.
+- نبود اختلاف در فرمول مالی هر قلم سفارش.
+- نبود اختلاف مبلغ فاکتور و فروش خالص هر سفارش.
+- نبود کلید تحلیلی ضروری خالی.
+- تطبیق مجموع فروش در Viewهای مختلف.
+- تطبیق 144 سفارش منتسب به کمپین با جدول سفارش‌ها.
+
+آخرین اجرا:
+
+```text
+17 checks: PASS
+ANALYTICS VALIDATION PASSED: all checks succeeded.
+```
+
+## فایل آموزشی
+
+یک راهنمای Word فارسی نیز ساخته شده است:
+
+```text
+راهنمای_آموزشی_پروژه_AutoParts.docx
+```
+
+این فایل مفاهیم PowerShell، Python، محیط مجازی، Git، CSV، SQL Server، نوع داده، قیدها، تراکنش، ODBC، خطایابی و Queryهای پایه را براساس همین پروژه آموزش می‌دهد. فایل خارج از مخزن پروژه نگهداری شده است.
 
 ## وضعیت فعلی فایل‌ها و Git
 
-فایل‌های زیر در Commit شماره `4fa1e40` ثبت و به GitHub ارسال شده‌اند:
+سه فایل لایه تحلیلی در Commit زیر ثبت و به GitHub ارسال شده‌اند:
 
 ```text
-requirements.txt
-sql/03_expand_product_status.sql
-src/load_data_to_sql_server.py
+ee3a5e0 feat: add validated SQL analytics layer
 ```
 
-بعد از Push، دستور زیر هیچ خروجی نداشت:
+فایل‌ها:
 
-```powershell
-git status --short
+```text
+sql/04_create_analytics_views.sql
+sql/05_create_business_views.sql
+sql/06_validate_analytics_layer.sql
 ```
 
-بنابراین مخزن در نقطه فعلی تمیز و با GitHub هماهنگ است.
+پس از Push:
+
+```text
+On branch main
+Your branch is up to date with 'origin/main'.
+nothing to commit, working tree clean
+```
+
+## مراحل کامل‌شده که نباید تکرار شوند
+
+- تولید هشت فایل داده مصنوعی.
+- اعتبارسنجی جامع داده‌های خام.
+- اتصال اعتبارسنجی به Pipeline تولید داده.
+- ساخت و اتصال مخزن GitHub.
+- نصب و تنظیم SQL Server 2025 و SSMS 22.
+- ساخت دیتابیس، چهار Schema عملیاتی و هشت جدول.
+- نصب و ثبت `pyodbc` و ODBC Driver 18.
+- ساخت Loader تراکنشی و انتقال هر هشت CSV.
+- تطبیق کامل 43,450 رکورد CSV و SQL Server.
+- ساخت Schema تحلیلی `analytics`.
+- ساخت دو View پایه و شش View مدیریتی.
+- اجرای 17 کنترل خودکار و تأیید تمام آن‌ها.
+- ثبت و Push تمام تغییرات تا Commit `ee3a5e0`.
 
 ## نقطه ادامه پروژه
 
-تمام مراحل زیر کامل شده‌اند و نباید تکرار شوند:
-
-- تولید داده‌های مصنوعی.
-- اعتبارسنجی جامع داده‌های خام.
-- اتصال اعتبارسنجی به Pipeline تولید داده.
-- نصب و تنظیم SQL Server 2025.
-- نصب و تنظیم SSMS 22.
-- ساخت دیتابیس.
-- ساخت Schemaها و جدول‌های عملیاتی.
-- نصب و ثبت `pyodbc`.
-- ساخت اسکریپت ورود داده.
-- انتقال هر ۸ CSV به SQL Server.
-- تطبیق کامل تعداد رکوردهای CSV و SQL Server.
-- ثبت و ارسال تمام تغییرات تا Commit شماره `4fa1e40`.
-
-مرحله بعدی پروژه:
+لایه تحلیلی SQL کامل و اعتبارسنجی شده است. مرحله بعد:
 
 ```text
-طراحی و ساخت لایه تحلیلی SQL برای تحلیل فروش، مشتریان، محصولات، کمپین‌ها، نمایندگان فروش، مرجوعی‌ها و وضعیت وصول مطالبات
+نصب Power BI Desktop، اتصال آن به SQL Server روی localhost و ساخت مدل اولیه داشبورد با Viewهای analytics
 ```
 
-پیش از ساخت فایل SQL جدید، باید درباره مدل تحلیلی موردنیاز تصمیم گرفته شود. سپس Queryها یا Viewهای تحلیلی به‌صورت مرحله‌بندی‌شده داخل پوشه `sql` ساخته، در SSMS اجرا، با داده واقعی آزمایش و پس از تأیید Commit شوند.
+Power BI Desktop هنوز نصب نشده است. ابتدا باید نسخه رسمی مناسب Windows نصب شود. سپس اتصال با تنظیمات زیر ساخته شود:
 
-Power BI Desktop هنوز نصب نشده است. نصب آن باید بعد از آماده‌شدن لایه تحلیلی SQL و هنگام شروع ساخت داشبورد انجام شود.
+```text
+Server: localhost
+Database: autoparts_sales_intelligence
+Authentication: Windows
+```
+
+در Power BI نباید تمام جدول‌ها بدون طراحی وارد شوند. ابتدا باید درباره Viewهای موردنیاز هر صفحه داشبورد، روابط مدل، جدول تاریخ و Measureهای DAX تصمیم گرفته شود.
 
 ## پیام پیشنهادی برای Work جدید
 
-در صورت نیاز، همراه با ارسال این فایل، پیام زیر را نیز بفرست:
-
 ```text
-این فایل گزارش کامل پروژه autoparts-sales-intelligence تا آخرین وضعیت فعلی است. لطفاً آن را کامل بخوان، هیچ‌کدام از مراحل انجام‌شده را تکرار نکن و دقیقاً از بخش «نقطه ادامه پروژه» کار را دنبال کن. من در SQL و Power BI تازه‌کار هستم؛ بنابراین هر بار فقط یک مرحله یا یک دستور بده و منتظر خروجی من بمان.
+این فایل گزارش کامل پروژه autoparts-sales-intelligence تا پایان ساخت و اعتبارسنجی لایه تحلیلی SQL است. لطفاً آن را کامل بخوان، هیچ‌کدام از مراحل انجام‌شده را تکرار نکن و دقیقاً از بخش «نقطه ادامه پروژه» کار را دنبال کن. دیتابیس Microsoft SQL Server است، نه PostgreSQL. من در SQL و Power BI تازه‌کار هستم؛ بنابراین هر بار فقط یک مرحله یا یک دستور بده و منتظر خروجی من بمان. هنگام تحویل فایل، دستور بررسی کامل‌بودن آن را نیز در همان پاسخ قرار بده.
 ```
